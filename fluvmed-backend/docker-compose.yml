@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: fluvmed_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: fluvmed_user
+      POSTGRES_PASSWORD: fluvmed_password
+      POSTGRES_DB: fluvmed_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fluvmed_user -d fluvmed_db"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: fluvmed_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@fluvmed.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build: .
+    container_name: fluvmed_api
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://fluvmed_user:fluvmed_password@db:5432/fluvmed_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  pgadmin_data:
