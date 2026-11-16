@@ -43,12 +43,6 @@ Adotando uma arquitetura **Offline-First**, o aplicativo permite que os profissi
   <img src="docs/screenshots/tela-secundaria.png" alt="Tela Secundária" width="45%">
 </div>
 
-### GIF Demonstrativo
-
-<div align="center">
-  <img src="docs/demo.gif" alt="Demonstração animada" width="80%">
-</div>
-
 ---
 
 ## 🛠️ Tecnologias Utilizadas
@@ -85,8 +79,8 @@ Certifique-se de ter instalado em sua máquina:
 ### 💻 Instalação e Execução
 
 1. **Clone o repositório**
-   ```bash
-   git clone [https://github.com/seu-usuario/seu-repo.git](https://github.com/seu-usuario/seu-repo.git)
+   ```
+   git clone https://github.com/cbsandes/fluvMed
    cd "TCC - Fametro"
 
 2. **Inicie o backend**
