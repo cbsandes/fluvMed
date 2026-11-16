@@ -39,8 +39,31 @@ Adotando uma arquitetura **Offline-First**, o aplicativo permite que os profissi
 ### Screenshots
 
 <div align="center">
-  <img src="docs/screenshots/tela-principal.png" alt="Tela Principal" width="45%">
-  <img src="docs/screenshots/tela-secundaria.png" alt="Tela Secundária" width="45%">
+
+  <h4>1. Tela Inicial</h4>
+  <img src="docs/Screenshot_106.png" alt="Tela Inicial" width="45%">
+
+  <h4>2. Pacientes</h4>
+  <img src="docs/Screenshot_105.png" alt="Pacientes" width="45%">
+
+  <h4>3. Cadastro de Pacientes</h4>
+  <img src="docs/Screenshot_107.png" alt="Cadastro de pacientes" width="45%">
+
+  <h4>4. Prontuário de Pacientes</h4>
+  <img src="docs/Screenshot_108.png" alt="Prontuário de pacientes" width="45%">
+
+  <h4>5. Tela de Atendimento</h4>
+  <img src="docs/Screenshot_109.png" alt="Tela de atendimento" width="45%">
+
+  <h4>6. Tela de Estoque e Sincronização</h4>
+  <img src="docs/Screenshot_111 - nsincronizado.png" alt="Tela de estoque e sincronização" width="45%">
+
+  <h4>7. Medicamentos</h4>
+  <img src="docs/Screenshot_111.png" alt="Medicamentos" width="45%">
+
+  <h4>8. Tela de Acessibilidade</h4>
+  <img src="docs/Screenshot_112.png" alt="Tela de acessibilidade" width="45%">
+
 </div>
 
 ---
