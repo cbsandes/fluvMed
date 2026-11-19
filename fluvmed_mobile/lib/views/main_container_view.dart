@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import '../utils/app_theme.dart';
@@ -19,36 +20,50 @@ class _MainContainerState extends State<MainContainer> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
+    final navBgColor = state.altoContraste ? AppTheme.highContrastCard : Colors.white;
+    final topInset = MediaQuery.viewPaddingOf(context).top;
 
-    return Scaffold(
-      backgroundColor: state.altoContraste ? AppTheme.highContrastBlack : AppTheme.darkSlate,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildTopAppBar(context, state),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: state.altoContraste ? const Color(0xFF121212) : AppTheme.backgroundLight,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(28),
-                    topRight: Radius.circular(28),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: navBgColor,
+        systemNavigationBarDividerColor: Colors.transparent,
+        systemNavigationBarIconBrightness: state.altoContraste ? Brightness.light : Brightness.dark,
+        systemNavigationBarContrastEnforced: false,
+      ),
+      child: Scaffold(
+        backgroundColor: state.altoContraste ? AppTheme.highContrastBlack : AppTheme.darkSlate,
+        body: Padding(
+          padding: EdgeInsets.only(top: topInset),
+          child: Column(
+            children: [
+              _buildTopAppBar(context, state),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: state.altoContraste ? const Color(0xFF121212) : AppTheme.backgroundLight,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                  ),
+                  child: IndexedStack(
+                    index: _tabIndex,
+                    children: [
+                      PacientesTab(onIniciarAtendimento: () => setState(() => _tabIndex = 1)),
+                      AtendimentoTab(onVoltarParaPacientes: () => setState(() => _tabIndex = 0)),
+                      const EstoqueSyncTab(),
+                    ],
                   ),
                 ),
-                child: IndexedStack(
-                  index: _tabIndex,
-                  children: [
-                    PacientesTab(onIniciarAtendimento: () => setState(() => _tabIndex = 1)),
-                    AtendimentoTab(onVoltarParaPacientes: () => setState(() => _tabIndex = 0)),
-                    const EstoqueSyncTab(),
-                  ],
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        bottomNavigationBar: _buildBottomNav(context, state),
       ),
-      bottomNavigationBar: _buildBottomNav(state),
     );
   }
 
@@ -56,41 +71,56 @@ class _MainContainerState extends State<MainContainer> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Text('FluvMed', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                  const SizedBox(width: 8),
-                  Text(
-                    '· ${state.usuarioLogado?.nome.split(' ').first ?? 'Equipe'}',
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: state.isOfflineSimulado ? AppTheme.amberWarning : Colors.greenAccent,
-                      shape: BoxShape.circle,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text(
+                      'FluvMed',
+                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    state.isOfflineSimulado ? 'Modo Offline: Dados Locais' : 'Conectado à UBS Central',
-                    style: const TextStyle(color: Colors.white70, fontSize: 11),
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        '· ${state.usuarioLogado?.nome.split(' ').first ?? 'Equipe'}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white70, fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: state.isOfflineSimulado ? AppTheme.amberWarning : Colors.greenAccent,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        state.isOfflineSimulado ? 'Modo Offline: Dados Locais' : 'Conectado à UBS Central',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white70, fontSize: 11),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -98,7 +128,10 @@ class _MainContainerState extends State<MainContainer> {
                   color: AppTheme.amberWarning,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text('${state.totalPendencias}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                child: Text(
+                  '${state.totalPendencias}',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                ),
               ),
               const SizedBox(width: 6),
               _buildTopIconBtn(
@@ -154,8 +187,8 @@ class _MainContainerState extends State<MainContainer> {
 
   Widget _buildTopIconBtn({required IconData icon, required VoidCallback onPressed, required String tooltip}) {
     return Container(
-      width: 36,
-      height: 36,
+      width: 34,
+      height: 34,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.12),
         borderRadius: BorderRadius.circular(10),
@@ -169,51 +202,89 @@ class _MainContainerState extends State<MainContainer> {
     );
   }
 
-  Widget _buildBottomNav(AppState state) {
+  Widget _buildBottomNav(BuildContext context, AppState state) {
+    final bgColor = state.altoContraste ? AppTheme.highContrastCard : Colors.white;
+    final borderColor = state.altoContraste ? Colors.white24 : const Color(0xFFE2E8F0);
+    // Lê diretamente a altura física da barra do Android (3 botões ou gestos)
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+
     return Container(
-      color: Colors.white,
-      height: 64,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(0, Icons.people_outline, 'Pacientes', state.totalPendencias),
-          _buildNavItem(1, Icons.monitor_heart_outlined, 'Atendimento', 0),
-          _buildNavItem(2, Icons.inventory_2_outlined, 'Estoque/Sync', state.totalPendencias),
+      padding: EdgeInsets.only(bottom: bottomInset),
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border(top: BorderSide(color: borderColor, width: 1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
         ],
+      ),
+      child: SizedBox(
+        height: 64,
+        child: Row(
+          children: [
+            Expanded(child: _buildNavItem(0, Icons.people_outline, 'Pacientes', state.totalPendencias, state)),
+            Expanded(child: _buildNavItem(1, Icons.monitor_heart_outlined, 'Atendimento', 0, state)),
+            Expanded(child: _buildNavItem(2, Icons.inventory_2_outlined, 'Estoque/Sync', state.totalPendencias, state)),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label, int badgeCount) {
+  Widget _buildNavItem(int index, IconData icon, String label, int badgeCount, AppState state) {
     final isSelected = _tabIndex == index;
-    final color = isSelected ? AppTheme.primaryTeal : Colors.grey.shade600;
+    final activeColor = state.altoContraste ? AppTheme.highContrastYellow : AppTheme.primaryTeal;
+    final inactiveColor = state.altoContraste ? Colors.white70 : Colors.grey.shade600;
+    final color = isSelected ? activeColor : inactiveColor;
 
     return InkWell(
       onTap: () => setState(() => _tabIndex = index),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, color: color, size: 24),
-                Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
-              ],
-            ),
-          ),
-          if (badgeCount > 0 && index != 1)
-            Positioned(
-              top: 4,
-              right: 12,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                child: Text('$badgeCount', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 6.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(icon, color: color, size: 24),
+                  if (badgeCount > 0 && index != 1)
+                    Positioned(
+                      top: -4,
+                      right: -10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '$badgeCount',
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            ),
-        ],
+              const SizedBox(height: 3),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

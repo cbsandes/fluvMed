@@ -57,7 +57,10 @@ class _PacientesTabState extends State<PacientesTab> {
                 border: Border.all(color: AppTheme.primaryTeal, width: 1.5),
               ),
               child: const Center(
-                child: Text('+ Novo Paciente', style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold, fontSize: 15)),
+                child: Text(
+                  '+ Novo Paciente',
+                  style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold, fontSize: 15),
+                ),
               ),
             ),
           ),
@@ -81,60 +84,85 @@ class _PacientesTabState extends State<PacientesTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: const Color(0xFFE0F2F1),
-                                child: const Icon(Icons.person, color: AppTheme.primaryTeal),
-                              ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(pac.nome, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                  Text('${pac.idade} anos (${pac.dataNascimentoFormatada}) · CPF ${pac.cpf}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                                  Text('SUS ${pac.numeroSus}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                                ],
-                              ),
-                            ],
+                          const CircleAvatar(
+                            backgroundColor: Color(0xFFE0F2F1),
+                            child: Icon(Icons.person, color: AppTheme.primaryTeal),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  pac.nome,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${pac.idade} anos (${pac.dataNascimentoFormatada}) · CPF ${pac.cpf}',
+                                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                                Text(
+                                  'SUS ${pac.numeroSus}',
+                                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                              ],
+                            ),
                           ),
                           IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
                             icon: const Icon(Icons.edit_outlined, color: AppTheme.primaryTeal),
                             tooltip: 'Editar Dados do Paciente',
                             onPressed: () => _dialogFormularioPaciente(context, state, pacienteExistente: pac),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Text(pac.comunidade, style: const TextStyle(color: AppTheme.primaryTeal, fontSize: 12, fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 8),
+                      Text(
+                        pac.comunidade,
+                        style: const TextStyle(color: AppTheme.primaryTeal, fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              ),
-                              onPressed: () => _mostrarHistoricoPaciente(context, state, pac),
-                              icon: const Icon(Icons.history, size: 16, color: AppTheme.primaryTeal),
-                              label: const Text('Histórico', style: TextStyle(color: AppTheme.primaryTeal)),
+                          OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            onPressed: () => _mostrarHistoricoPaciente(context, state, pac),
+                            icon: const Icon(Icons.history, size: 16, color: AppTheme.primaryTeal),
+                            label: const Text(
+                              'Histórico',
+                              softWrap: false,
+                              maxLines: 1,
+                              style: TextStyle(color: AppTheme.primaryTeal),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
-                            flex: 2,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppTheme.primaryTeal,
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               ),
                               onPressed: () {
                                 state.selecionarPaciente(pac);
                                 widget.onIniciarAtendimento();
                               },
-                              child: const Text('Iniciar Atendimento', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              child: const FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'Iniciar Atendimento',
+                                  softWrap: false,
+                                  maxLines: 1,
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -188,19 +216,21 @@ class _PacientesTabState extends State<PacientesTab> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Data de Nascimento', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                          Text(
-                            DateFormat('dd/MM/yyyy').format(dataSelecionada),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                          Text(
-                            'Idade calculada: $idadeCalculada anos',
-                            style: const TextStyle(color: AppTheme.primaryTeal, fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Data de Nascimento', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                            Text(
+                              DateFormat('dd/MM/yyyy').format(dataSelecionada),
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            Text(
+                              'Idade calculada: $idadeCalculada anos',
+                              style: const TextStyle(color: AppTheme.primaryTeal, fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
                       ),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE0F2F1), elevation: 0),
@@ -267,12 +297,14 @@ class _PacientesTabState extends State<PacientesTab> {
     final atendimentos = await state.obterHistoricoPaciente(pac.id!);
 
     if (!context.mounted) return;
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomInset),
         height: MediaQuery.of(context).size.height * 0.75,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,12 +312,14 @@ class _PacientesTabState extends State<PacientesTab> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Prontuário: ${pac.nome}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    Text('${pac.comunidade} · ${pac.idade} anos', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Prontuário: ${pac.nome}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('${pac.comunidade} · ${pac.idade} anos', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    ],
+                  ),
                 ),
                 IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(ctx)),
               ],
@@ -331,7 +365,12 @@ class _PacientesTabState extends State<PacientesTab> {
                                   children: [
                                     const Icon(Icons.verified_user, size: 14, color: AppTheme.primaryTeal),
                                     const SizedBox(width: 4),
-                                    Text('Atendido por: ${at.profissionalNome} (${at.profissionalRegistro})', style: const TextStyle(fontSize: 12, color: Colors.blueGrey, fontWeight: FontWeight.w600)),
+                                    Expanded(
+                                      child: Text(
+                                        'Atendido por: ${at.profissionalNome} (${at.profissionalRegistro})',
+                                        style: const TextStyle(fontSize: 12, color: Colors.blueGrey, fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 8),

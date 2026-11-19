@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
@@ -12,6 +13,20 @@ import 'views/main_container_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Configura modo edge-to-edge sem faixa escura do sistema sobre os menus
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      systemNavigationBarContrastEnforced: false,
+    ),
+  );
 
   // Configuração da fábrica SQLite para ambiente Web (Chrome)
   if (kIsWeb) {
@@ -40,7 +55,7 @@ class FluvMedApp extends StatelessWidget {
     final state = context.watch<AppState>();
 
     return MaterialApp(
-      title: 'FluvMed',
+      title: 'fluvMed',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.buildTheme(
         altoContraste: state.altoContraste,
